@@ -28,7 +28,11 @@ public class Plane extends Geometry{
      */
     public Plane(Point point1, Point point2, Point point3){
         this.q = point1;
-        this.normal = null;
+        Vector v1 = point2.subtract(point1);
+        Vector v2 = point3.subtract(point1);
+
+        // The normal is the cross product of the two vectors
+        this.normal = v1.crossProduct(v2).normalize();
     }
 
     /**
@@ -53,6 +57,10 @@ public class Plane extends Geometry{
 
     @Override
     public Vector getNormal(Point point_on_body) {
-        return this.normal;
+        if (point_on_body.equals(this.q)) {
+            return this.normal;
+        } else {
+            return this.normal;
+        }
     }
 }

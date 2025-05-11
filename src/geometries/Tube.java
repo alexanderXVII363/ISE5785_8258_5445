@@ -2,6 +2,7 @@ package geometries;
 
 import primitives.Point;
 import primitives.Ray;
+import primitives.Util;
 import primitives.Vector;
 
 /**
@@ -26,7 +27,27 @@ public class Tube extends RadialGeometry{
     }
 
     @Override
-    public Vector getNormal(Point point_on_body) {
-        return null;
+    public Vector getNormal(Point point) {
+        Point p0 = axis.getHead();
+        Vector v = axis.getDirection();
+
+        // Calculate the vector from the ray's head to the point
+        Vector p0ToPoint = point.subtract(p0);
+
+        // Calculate the projection of p0ToPoint on the ray's direction
+        double t = v.dotProduct(p0ToPoint);
+
+        // Calculate the point on the axis ray that is closest to the given point
+        Point projectedPoint;
+        if (Util.isZero(t)) {
+            // The point is right across from the ray's head
+            projectedPoint = p0;
+        } else {
+            // Calculate the point on the axis ray at distance t from head
+            projectedPoint = p0.add(v.scale(t));
+        }
+
+        // The normal is the vector from the projected point to the given point, normalized
+        return point.subtract(projectedPoint).normalize();
     }
 }

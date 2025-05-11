@@ -27,6 +27,9 @@ public class Sphere extends RadialGeometry{
 
     @Override
     public Vector getNormal(Point point_on_body) {
-        return null;
+        // Calculate the normal vector at the given point on the sphere's surface
+        Vector normal = point_on_body.subtract(center);
+        // Normalize the vector to ensure it has a length of 1
+        return normal.normalize();
     }
 }
