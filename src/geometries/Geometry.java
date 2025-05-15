@@ -6,7 +6,7 @@ import primitives.Vector;
 /**
  * Abstract class representing a generic geometry in three-dimensional space.
  */
-abstract public class Geometry {
+abstract public class Geometry implements Intersectable {
     /**
      * Abstract method to retrieve the normal vector to the geometry at a specified point on its surface.
      *

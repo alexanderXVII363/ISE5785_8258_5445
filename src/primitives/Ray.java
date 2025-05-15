@@ -1,40 +1,29 @@
 package primitives;
 
 /**
- * A class that represents a ray in three-dimensional space,
- * defined by a starting point (head) and a direction vector.
- * The class use a Point object and a Vector object.
+ * Class Ray is the basic class representing a ray in Euclidean geometry in Cartesian
+ * 3-Dimensional coordinate system, with a starting point and a direction vector.
  */
 public class Ray {
     /**
-     * The starting point of the ray.
+     * The starting point of the ray
      */
     private final Point head;
 
     /**
-     * The direction vector of the ray, normalized to have unit length.
+     * The normalized direction vector of the ray
      */
     private final Vector direction;
 
     /**
-     * Constructs a new Ray with the specified head (starting point) and direction vector.
-     * The direction vector is normalized to have unit length.
-     *
-     * @param _head      The starting point of the ray.
-     * @param _direction The direction vector of the ray.
+     * Constructor for creating a new ray with a point and direction vector
+     * @param p0 The starting point of the ray
+     * @param dir The direction vector of the ray (will be normalized)
      */
-    public Ray(Point _head, Vector _direction){
-        this.head = _head;
-        this.direction = _direction.normalize();
+    public Ray(Point p0, Vector dir) {
+        this.head = p0;
+        this.direction = dir.normalize();
     }
-
-    public Point getHead() {
-        return head;
-    }
-    public Vector getDirection() {
-        return direction;
-    }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -44,6 +33,31 @@ public class Ray {
 
     @Override
     public String toString() {
-        return head.toString()+ direction.toString();
+        return "Ray [origin=" + head + ", direction=" + direction + "]";
+    }
+
+
+    /*
+     * Getter for the point on the ray
+     * @return the point on the ray
+     */
+    public Point getHead() {return head;}
+
+    /**
+     * Getter for the direction vector of the ray
+     * @return the direction vector of the ray
+     */
+    public Vector getDirection() {
+        return direction;
+    }
+
+    /**
+     * Returns a point on the ray at a given distance from the starting point
+     * @param t The distance from the starting point
+     * @return A new point on the ray at distance t from the starting point
+     */
+    public Point getPoint(double t){
+        if(Util.isZero(t)) return head;
+        return head.add(direction.scale(t));
     }
 }
