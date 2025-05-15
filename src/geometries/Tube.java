@@ -5,11 +5,13 @@ import primitives.Ray;
 import primitives.Util;
 import primitives.Vector;
 
+import java.util.List;
+
 /**
  * A class that represents a tube in three-dimensional space, defined by a radius and an axis (Ray).
  * The class inherits from the RadialGeometry class.
  */
-public class Tube extends RadialGeometry{
+public class Tube extends RadialGeometry {
     /**
      * The axis of the tube, represented by a Ray.
      */
@@ -21,7 +23,7 @@ public class Tube extends RadialGeometry{
      * @param _radius The radius of the tube.
      * @param _axis   The axis of the tube, represented by a Ray.
      */
-    public Tube(double _radius, Ray _axis){
+    public Tube(double _radius, Ray _axis) {
         super(_radius);
         this.axis = _axis;
     }
@@ -49,5 +51,10 @@ public class Tube extends RadialGeometry{
 
         // The normal is the vector from the projected point to the given point, normalized
         return point.subtract(projectedPoint).normalize();
+    }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return null;
     }
 }

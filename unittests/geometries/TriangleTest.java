@@ -39,4 +39,33 @@ class TriangleTest {
         // Test that the normal is a unit vector (length = 1)
         assertEquals(1, normal.length(), 0.00001, "Normal vector is not normalized");
     }
+    /**
+     * Test method for {@link geometries.Triangle#findIntersections(primitives.Ray)}.
+     * Tests the intersection of a ray with a triangle.
+     */
+    @Test
+    void testFindIntersections() {
+        //================== Equivalence Partitions Tests ==================
+        // TC01: the intersection point is inside the triangle
+        Triangle triangle = new Triangle(new Point(1, 1, 0), new Point(1, 0, 0), new Point(0, 1, 0));
+        assertEquals(1, triangle.findIntersections(new Ray(new Point(1.8, 1.8, 1), new Vector(-1, -1, -1))).size(),
+                "Failed to find the intersection point when the intersection point is inside the triangle");
+        // TC02: the intersection point is outside the triangle and against an edge
+        assertNull(triangle.findIntersections(new Ray(new Point(0.5, 2, 1), new Vector(1, 0, 0))),
+                "Failed to find the intersection point when the intersection point is outside the triangle and against an edge");
+        // TC03: the intersection point is outside the triangle and against a vertex
+        assertNull(triangle.findIntersections(new Ray(new Point(2, 2, 1), new Vector(1, 0, 0))),
+                "Failed to find the intersection point when the intersection point is outside the triangle and against an edge");
+        //================== Boundary Values Tests ==================
+        // TC04: the intersection point is on the edge of the triangle
+        assertNull(triangle.findIntersections(new Ray(new Point(0.5, 1, -1), new Vector(1, 0, 0))),
+                "Failed to find the intersection point when the intersection point is on the edge of the triangle");
+        // TC05: the intersection point is on the vertex of the triangle
+        assertNull(triangle.findIntersections(
+                        new Ray(new Point(1, 1, 1), new Vector(0, 0, -1))),
+                "Failed to find the intersection point when the intersection point is on the vertex of the triangle");
+        // TC06: the intersection point is outside the triangle but in the path of the edge
+        assertNull(triangle.findIntersections(new Ray(new Point(2, 1, -1), new Vector(1, 0, 0))),
+                "Failed to find the intersection point when the intersection point is outside the triangle but in the path of the edge");
+    }
 }

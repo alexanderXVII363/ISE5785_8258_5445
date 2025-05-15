@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import primitives.Point;
 import primitives.Vector;
+import primitives.Ray;
+
+import java.util.List;
 
 /**
  * Testing Planes
@@ -16,6 +19,13 @@ class PlaneTest {
      */
     private static final double DELTA = 0.000001;
 
+    // Points and planes for testing
+    Point p1 = new Point(0, 0, 0);
+    Point p2 = new Point(1, 0, 0);
+    Point p3 = new Point(0, 1, 1);
+    Point p4 = new Point(0, 0, 1);
+    Plane plane = new Plane(p1, p2, p3);
+
     /**
      * Test method for {@link geometries.Plane#Plane(primitives.Point, primitives.Point, primitives.Point)}.
      */
@@ -24,11 +34,6 @@ class PlaneTest {
         // ============ Equivalence Partitions Tests ==============
 
         // TC01: Correct plane from three points
-        Point p1 = new Point(0, 0, 0);
-        Point p2 = new Point(1, 0, 0);
-        Point p3 = new Point(0, 1, 1);
-        Plane plane = new Plane(p1, p2, p3);
-
         // Compute two vectors from points
         Vector v1 = p2.subtract(p1);
         Vector v2 = p3.subtract(p1);
@@ -70,11 +75,6 @@ class PlaneTest {
     public void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Test that the normal to plane is properly calculated
-        // Create a plane using 3 points constructor
-        Point p1 = new Point(0, 0, 1);
-        Point p2 = new Point(1, 0, 0);
-        Point p3 = new Point(0, 1, 0);
-        Plane plane = new Plane(p1, p2, p3);
 
         // Calculate the expected normal
         Vector v1 = p2.subtract(p1);
@@ -92,5 +92,54 @@ class PlaneTest {
         // Verify that the normal's length is 1
         assertEquals(1, result.length(), 0.00001, "Plane normal length is not 1");
     }
+
+    /**
+     * Test method for {@link geometries.Plane#findIntersections(primitives.Ray)}.
+     */
+    @Test
+    void testFindIntersections() {
+        // =========== Equivalence Partitions Tests ==============
+        // TC01: Ray intersects the plane and is neither orthogonal nor parallel to the plane
+        Ray ray = new Ray(p4, new Vector(1,1,-1));
+        assertEquals(1, plane.findIntersections(ray).size(), "Ray should intersect the plane");
+
+        // TC02: Ray does not intersect the plane and is neither orthogonal nor parallel to the plane
+        ray = new Ray(p4, new Vector(1, 0, 0));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+
+        // =============== Boundary Values Tests ==================
+
+        // Group 1: Parallel
+        // TC03: Ray is contained in the plane
+        ray = new Ray(p1, new Vector(1, 0, 0));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+
+        // TC04: Ray is parallel to the plane
+        ray = new Ray(p4, new Vector(1, 0, 0));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+
+        //Group 2: Orthogonal
+        // TC05: Ray starts off the plane and points away from it
+        ray = new Ray(p4, new Vector(0, -1, 1));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+
+        // TC06: Ray starts off the plane and points towards it
+        ray = new Ray(p4, new Vector(0, 1, -1));
+        assertEquals(1,plane.findIntersections(ray).size(), "Ray should intersect the plane");
+
+        // TC07: Ray starts on the plane and points away from it
+        ray = new Ray(p1, new Vector(0, 1, -1));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+
+        //Group 3: Begins on plane
+        // TC08: Ray starts on the origin of the plane but is neither orthogonal nor parallel to the plane
+        ray = new Ray(p1, new Vector(1, 1, 0));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+        // TC09: Ray starts on the plane and is orthogonal to the plane
+        ray = new Ray(new Point(2,2,2), new Vector(1, 1, 0));
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+
+    }
+
 }
 
