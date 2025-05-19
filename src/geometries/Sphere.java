@@ -27,7 +27,10 @@ public class Sphere extends RadialGeometry{
         super(_radius);
         this.center = _point;
     }
-
+    public Sphere( Point _point, double _radius){
+        super(_radius);
+        this.center = _point;
+    }
     @Override
     public Vector getNormal(Point point_on_body) {
         // Calculate the normal vector at the given point on the sphere's surface

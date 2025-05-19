@@ -118,4 +118,14 @@ public class Double3 {
     *               triad, false otherwise
     */
    public boolean lowerThan(Double3 other) { return d1 < other.d1 && d2 < other.d2 && d3 < other.d3; }
+
+   public int d1() {
+        return (int) Math.round(d1);
+   }
+    public int d2() {
+          return (int) Math.round(d2);
+    }
+    public int d3() {
+          return (int) Math.round(d3);
+    }
 }

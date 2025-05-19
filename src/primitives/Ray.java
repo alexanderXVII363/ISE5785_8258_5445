@@ -1,5 +1,7 @@
 package primitives;
 
+import java.util.List;
+
 /**
  * Class Ray is the basic class representing a ray in Euclidean geometry in Cartesian
  * 3-Dimensional coordinate system, with a starting point and a direction vector.
@@ -59,5 +61,26 @@ public class Ray {
     public Point getPoint(double t){
         if(Util.isZero(t)) return head;
         return head.add(direction.scale(t));
+    }
+    // findClosestPoint receives a list of points and returns the closest point to head of the ray
+    public Point findClosestPoint(List<Point> points) {
+        if (points == null || points.isEmpty()) {
+            return null;
+        }
+
+        Point closestPoint = points.get(0);
+        double minDistanceSquared = head.distanceSquared(closestPoint);
+
+        for (int i = 1; i < points.size(); i++) {
+            Point currentPoint = points.get(i);
+            double currentDistanceSquared = head.distanceSquared(currentPoint);
+
+            if (currentDistanceSquared < minDistanceSquared) {
+                closestPoint = currentPoint;
+                minDistanceSquared = currentDistanceSquared;
+            }
+        }
+
+        return closestPoint;
     }
 }
