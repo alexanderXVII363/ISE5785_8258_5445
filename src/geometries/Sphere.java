@@ -39,14 +39,14 @@ public class Sphere extends RadialGeometry{
         return normal.normalize();
     }
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         Point p0 = ray.getHead();  // The starting point of the ray
         Vector dir = ray.getDirection();  // The direction vector of the ray
 
         // Case 1: The ray starts at the center of the sphere
         if (center.equals(p0)) {
             // If the ray starts at the center, the intersection will be on the surface of the sphere at a distance equal to the radius
-            return List.of(ray.getPoint(radius));  // Add the scaled direction to the center to get the intersection point
+            return List.of(new Intersection(this,ray.getPoint(radius)));  // Add the scaled direction to the center to get the intersection point
         }
 
         // Case 2: General case for a ray not starting at the center
@@ -55,9 +55,8 @@ public class Sphere extends RadialGeometry{
         double d = Util.alignZero(Math.sqrt(u.lengthSquared() - tm * tm));  // Calculate the perpendicular distance from the center to the ray
 
         // If the perpendicular distance is greater than or equal to the radius, there is no intersection
-        if (d >= radius) {
-            return null;  // No intersection
-        }
+        if (Util.alignZero(d - radius) >= 0)
+            return null;
 
         // Calculate th, the distance along the ray to the intersection points
         double th = Math.sqrt(radius * radius - d * d);  // The distance from the ray origin to the intersection points
@@ -65,19 +64,19 @@ public class Sphere extends RadialGeometry{
         double t1 = Util.alignZero(tm - th);  // First intersection point
         double t2 = Util.alignZero(tm + th);  // Second intersection point
 
-        // Case 3: Both intersection points are valid (the ray intersects the sphere at two points)
+        // Both intersection points are valid (the ray intersects the sphere at two points)
         if (t1 > 0 && t2 > 0) {
-            return List.of(ray.getPoint(t1), ray.getPoint(t2));  // Both intersections are valid
+            return List.of(new Intersection(this,ray.getPoint(t1)),new Intersection(this,ray.getPoint(t2)) );  // Both intersections are valid
         }
 
-        // Case 4: The ray starts inside the sphere and intersects at one point
+        // The ray starts inside the sphere and intersects at one point
         if (t1 > 0) {
-            return List.of(ray.getPoint(t1));  // One intersection point inside the sphere
+            return List.of(new Intersection(this,ray.getPoint(t1)));  // One intersection point inside the sphere
         }
 
-        // Case 5: The ray intersects at one point but doesn't start inside the sphere
+        // The ray intersects at one point
         if (t2 > 0) {
-            return List.of(ray.getPoint(t2));  // One intersection point outside the sphere
+            return List.of(new Intersection(this,ray.getPoint(t2)));  // One intersection point outside the sphere
         }
 
         // If no valid intersection, return null

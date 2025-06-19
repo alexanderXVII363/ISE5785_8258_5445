@@ -1,7 +1,7 @@
 package primitives;
 
 import java.util.List;
-
+import geometries.Intersectable.Intersection;
 /**
  * Class Ray is the basic class representing a ray in Euclidean geometry in Cartesian
  * 3-Dimensional coordinate system, with a starting point and a direction vector.
@@ -64,23 +64,25 @@ public class Ray {
     }
     // findClosestPoint receives a list of points and returns the closest point to head of the ray
     public Point findClosestPoint(List<Point> points) {
-        if (points == null || points.isEmpty()) {
-            return null;
-        }
-
-        Point closestPoint = points.get(0);
-        double minDistanceSquared = head.distanceSquared(closestPoint);
-
-        for (int i = 1; i < points.size(); i++) {
-            Point currentPoint = points.get(i);
-            double currentDistanceSquared = head.distanceSquared(currentPoint);
-
-            if (currentDistanceSquared < minDistanceSquared) {
-                closestPoint = currentPoint;
-                minDistanceSquared = currentDistanceSquared;
-            }
-        }
-
-        return closestPoint;
+        return points.isEmpty() ? null
+                : findClosestIntersection(
+                points.stream()
+                        .map(p -> new Intersection(null, p))
+                        .toList()
+        ).point;
     }
+
+    /**
+     * Finds the closest intersection point from a list of intersections.
+     * @param intersections
+     * @return the closest intersection point to the ray's head, or null if no intersections exist
+     */
+    public Intersection findClosestIntersection(List<Intersection> intersections) {
+        if (intersections == null || intersections.isEmpty()) return null;
+        return intersections.stream()
+                .min((i1, i2) -> Double.compare(i1.point.distance(head), i2.point.distance(head)))
+                .orElse(null);
+    }
+
+
 }

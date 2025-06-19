@@ -19,7 +19,7 @@ public class Triangle extends Polygon {
         return plane.getNormal(point);
     }
     @Override
-    public List<Point> findIntersections(Ray ray){
+    public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // Step 1: Find intersection with the plane of the triangle
         List<Point> planeIntersections = plane.findIntersections(ray);
         if (planeIntersections == null) return null;
@@ -27,7 +27,7 @@ public class Triangle extends Polygon {
         Point p0 = ray.getHead();         // Starting point of the ray
         Vector v = ray.getDirection();  // Direction of the ray
 
-        Point p = planeIntersections.get(0); // Intersection point with the plane
+        Point p = planeIntersections.getFirst(); // Intersection point with the plane
 
         // Step 2: Check if the point is inside the triangle using inside-out test
         Vector v1 = vertices.get(0).subtract(p0);
@@ -44,7 +44,7 @@ public class Triangle extends Polygon {
 
         // If all signs are the same (positive or negative), the point is inside
         if ((s1 > 0 && s2 > 0 && s3 > 0) || (s1 < 0 && s2 < 0 && s3 < 0)) {
-            return List.of(p);
+            return List.of(new Intersection(this,p));
         }
 
         return null; // The point is outside the triangle
