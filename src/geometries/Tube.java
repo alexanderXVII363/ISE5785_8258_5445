@@ -53,10 +53,15 @@ public class Tube extends RadialGeometry {
         return point.subtract(projectedPoint).normalize();
     }
 
-    @Override
     public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // The tube does not have a specific intersection calculation method,
         // so we return null to indicate no intersections.
+        return List.of();
+    }
+    @Override
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
+        // The tube does not have a specific intersection calculation method,
+        // so we return an empty list to indicate no intersections.
         return List.of();
     }
 }

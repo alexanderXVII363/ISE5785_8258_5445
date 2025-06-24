@@ -81,7 +81,7 @@ public class Polygon extends Geometry {
 
    @Override
    public Vector getNormal(Point point) { return plane.getNormal(); }
-   @Override
+
    public List<Intersection> calculateIntersectionsHelper(Ray ray) {
       List<Intersection> planeIntersections = plane.calculateIntersections(ray);
       if (planeIntersections == null) {
@@ -116,4 +116,39 @@ public class Polygon extends Geometry {
       }
       return List.of(new Intersection(this, planeIntersections.getFirst().point));
    }
+    @Override
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
+        List<Intersection> planeIntersections = plane.calculateIntersectionsHelper(ray, maxDistance);
+        if (planeIntersections == null || planeIntersections.isEmpty()) {
+            return List.of();
+        }
+
+        Point rayHead = ray.getHead();
+        Vector rayDirection = ray.getDirection();
+
+        int size = vertices.size();
+        Vector[] normals = new Vector[size];
+
+        for (int i = 0; i < size; i++) {
+            Point pi = vertices.get(i);
+            Point pj = vertices.get((i + 1) % size);
+
+            Vector vi = pi.subtract(rayHead);
+            Vector vj = pj.subtract(rayHead);
+
+            normals[i] = vi.crossProduct(vj).normalize();
+        }
+        double dotProduct = alignZero(normals[0].dotProduct(rayDirection));
+        if (dotProduct == 0)
+            return List.of();
+
+        boolean isPositive = dotProduct > 0;
+
+        for (int i = 1; i < size; i++) {
+            dotProduct = alignZero(normals[i].dotProduct(rayDirection));
+            if (dotProduct == 0 || (dotProduct > 0) != isPositive)
+                return List.of();  // Return empty list if dotProduct is zero or signs don't match
+        }
+        return List.of(new Intersection(this, planeIntersections.getFirst().point));
+    }
 }

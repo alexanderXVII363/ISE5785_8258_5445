@@ -57,8 +57,6 @@ public class Plane extends Geometry {
         return normal;
     }
 
-
-    @Override
     public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         Point head = ray.getHead();
         if (q0.equals(head))  // ray starts exactly on the plane's reference point
@@ -79,6 +77,17 @@ public class Plane extends Geometry {
             return null;
 
         return List.of(new Intersection(this, ray.getPoint(t)));
+    }
+    @Override
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
+        List<Intersection> intersections = calculateIntersectionsHelper(ray);
+        if (intersections == null || intersections.isEmpty()) {
+            return List.of();
+        }
+        // Filter intersections based on maxDistance
+        return intersections.stream()
+                .filter(intersection -> intersection.point.distance(ray.getHead()) <= maxDistance)
+                .toList();
     }
 }
 

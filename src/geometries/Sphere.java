@@ -38,7 +38,7 @@ public class Sphere extends RadialGeometry{
         // Normalize the vector to ensure it has a length of 1
         return normal.normalize();
     }
-    @Override
+
     public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         Point p0 = ray.getHead();  // The starting point of the ray
         Vector dir = ray.getDirection();  // The direction vector of the ray
@@ -81,5 +81,18 @@ public class Sphere extends RadialGeometry{
 
         // If no valid intersection, return null
         return null;  // No valid intersections
+    }
+    @Override
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
+        // Calculate intersections with the sphere and filter by maxDistance
+        List<Intersection> intersections = calculateIntersectionsHelper(ray);
+        if (intersections == null || intersections.isEmpty()) {
+            return List.of();  // No intersections found
+        }
+
+        // Filter intersections based on the maximum distance
+        return intersections.stream()
+                .filter(intersection -> ray.getHead().distance(intersection.point) <= maxDistance)
+                .toList();
     }
 }

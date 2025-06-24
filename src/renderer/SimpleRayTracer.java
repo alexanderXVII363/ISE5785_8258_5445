@@ -8,6 +8,34 @@ import java.util.List;
 import geometries.Intersectable. Intersection;
 
 public class SimpleRayTracer extends RayTracerBase {
+    private static final double DELTA = 0.1;
+
+
+    private boolean unshaded(Intersection intersection) {
+        Point point = intersection.point;
+        LightSource lightSource = intersection.lightSource;
+        Vector lightDir = lightSource.getL(point);
+        double lightDistance = lightSource.getDistance(point);
+
+        Ray shadowRay = new Ray(point.add(intersection.n.scale(intersection.nl<0?DELTA:-DELTA)), lightDir.scale(-1));
+
+        List<Intersection> intersections = scene.geometries.calculateIntersections(shadowRay, lightDistance);
+
+        if (intersections == null) return true;
+
+        for (Intersection i : intersections) {
+            // Ignore the geometry the point is already on
+            if (!i.geometry.equals(intersection.geometry)) {
+                return false; // There is a blocking object between point and light
+            }
+        }
+
+        return true; // No blockers found
+    }
+
+
+
+
     // This method calculates the color at a given point in the scene
     /**
      * Calculates the color at the intersection point based on ambient light and local effects.
@@ -16,6 +44,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param ray          the ray that hit the geometry
      * @return the calculated color at the intersection point
      */
+
     public Color calcColor(Intersection intersection, Ray ray) {
         // If the intersection is not valid, return black
         if (!preprocessIntersection(intersection, ray.getDirection())) {
@@ -122,6 +151,9 @@ public class SimpleRayTracer extends RayTracerBase {
             if (!setLightSource(intersection, lightSource))
                 continue;
 
+            if (!unshaded(intersection))
+                continue;
+
             // Light intensity at the point
             Color iL = lightSource.getIntensity(intersection.point);
 
@@ -135,5 +167,6 @@ public class SimpleRayTracer extends RayTracerBase {
 
         return color;
     }
+
 
 }

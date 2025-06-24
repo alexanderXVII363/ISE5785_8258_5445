@@ -47,4 +47,8 @@ public class PointLight extends Light implements LightSource{
         // PointLight does not support narrow beam, return this for consistency
         return this;
     }
+    @Override
+    public double getDistance(Point p) {
+        return position.distance(p);
+    }
 }
