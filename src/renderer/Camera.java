@@ -7,19 +7,50 @@ import primitives.Ray;
 import scene.Scene;
 
 import java.util.MissingResourceException;
-
+/** * The Camera class represents a camera in a 3D scene.
+ * It allows setting the camera position, direction, view plane size, and distance to the view plane.
+ * It can render images by tracing rays through each pixel and coloring them.
+ */
 public class Camera implements Cloneable {
+    /** * The camera's position, forward direction, up direction, right direction,
+     * view plane width, height, distance to the view plane, image writer, ray tracer,
+     * and resolution (number of horizontal and vertical pixels).
+     */
     private Point p0 = new Point(0, 0, 0);         // Camera position
+    /**
+     * The forward direction vector (vTo) is the direction the camera is looking at.
+     * The up direction vector (vUp) is the direction that is considered "up" for the camera.
+     * The right direction vector (vRight) is perpendicular to both vTo and vUp.
+     */
     private Vector vTo = new Vector(0, 0, -1);     // Forward direction
+    /**
+     * The up direction vector (vUp) is the direction that is considered "up" for the camera.
+     * The right direction vector (vRight) is perpendicular to both vTo and vUp.
+     */
     private Vector vUp = new Vector(0, 1, 0);      // Up direction
+    /**
+     * The right direction vector (vRight) is perpendicular to both vTo and vUp.
+     * It is used to calculate the position of pixels on the view plane.
+     */
     private Vector vRight = new Vector(1, 0, 0);   // Right direction
+    /**
+     * The view plane width and height define the size of the area that the camera can see.
+     * The distance to the view plane is the distance from the camera position to the view plane.
+     */
     private double width = 0.0;                    // View plane width
+    /**
+     * The view plane height defines the vertical size of the area that the camera can see.
+     * The distance to the view plane is the distance from the camera position to the view plane.
+     */
     private double height = 0.0;                   // View plane height
+
     private double distance = 0.0;// Distance to view plane
+
     private ImageWriter imageWriter = null; // Image writer for rendering
     private RayTracerBase rayTracer = null; // Ray tracer for rendering
     private int nX = 1; // Number of horizontal pixels
     private int nY = 1; // Number of vertical pixels
+
     // Private default constructor
     private Camera() {}
     // Static method to get Builder object (implementation to be added later)

@@ -56,12 +56,7 @@ public class Tube extends RadialGeometry {
     public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // The tube does not have a specific intersection calculation method,
         // so we return null to indicate no intersections.
-        return List.of();
+        return null;
     }
-    @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
-        // The tube does not have a specific intersection calculation method,
-        // so we return an empty list to indicate no intersections.
-        return List.of();
-    }
+
 }

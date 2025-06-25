@@ -17,9 +17,9 @@ public  abstract class Intersectable {
      */
     public final List<Point> findIntersections(Ray ray) {
         var list = calculateIntersections(ray);
-        return list.isEmpty() ? null : list.stream().map(intersection -> intersection.point).toList();
+        return list==null||list.isEmpty() ? null : list.stream().map(intersection -> intersection.point).toList();
     }
-    protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
+    protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray);
 
     //we will add a public static class called Intersection with geometry and point
     public static class Intersection {
@@ -70,11 +70,9 @@ public  abstract class Intersectable {
 
 
     }
+
     public final List<Intersection> calculateIntersections(Ray ray) {
-        return calculateIntersections(ray, Double.POSITIVE_INFINITY);
-    }
-    public final List<Intersection> calculateIntersections(Ray ray, double maxDistance) {
-        return calculateIntersectionsHelper(ray, maxDistance);
+        return calculateIntersectionsHelper(ray);
     }
 
 

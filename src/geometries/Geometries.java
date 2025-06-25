@@ -37,20 +37,9 @@ public class Geometries extends Intersectable {
                 }
             }
         }
-        return totalIntersections != null ? totalIntersections : List.of();
+        return totalIntersections;
     }
 
-    @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
-        List<Intersection> totalIntersections = new LinkedList<>();
-        for (Intersectable geo : geometries) {
-            List<Intersection> intersections = geo.calculateIntersectionsHelper(ray, maxDistance);
-            if (intersections != null && !intersections.isEmpty()) {
-                totalIntersections.addAll(intersections);
-            }
-        }
-        return totalIntersections.isEmpty() ? List.of() : totalIntersections;
-    }
 
 
 

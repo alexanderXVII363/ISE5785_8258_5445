@@ -7,6 +7,9 @@ import geometries.Intersectable.Intersection;
  * 3-Dimensional coordinate system, with a starting point and a direction vector.
  */
 public class Ray {
+
+    private static final double DELTA = 0.1;
+
     /**
      * The starting point of the ray
      */
@@ -27,6 +30,10 @@ public class Ray {
         this.direction = dir.normalize();
     }
 
+    public Ray(Point p,Vector direction, Vector normal){
+        this.direction = direction;
+        head = p.add(normal.scale(direction.dotProduct(normal)<0?-DELTA:DELTA));
+    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

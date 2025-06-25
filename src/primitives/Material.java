@@ -5,6 +5,8 @@ public class Material {
     public Double3 kD = Double3.ZERO; // Diffuse reflection coefficient
     public Double3 kS = Double3.ZERO; // Specular reflection coefficient
     public int nShininess = 0; // Shininess exponent for specular reflection
+    public Double3 kT = Double3.ZERO; // Transmission coefficient for transparency
+    public Double3 kR = Double3.ZERO; // Reflection coefficient for reflection
 
     public Material setKa(Double3 kA) {
         this.kA = kA;
@@ -30,5 +32,19 @@ public class Material {
     public Material setShininess(int nShininess) {
         this.nShininess = nShininess;
         return this;
+    }
+    public Material setKt(Double3 kT) {
+        this.kT = kT;
+        return this;
+    }
+    public Material setKt(double kT) {
+        return setKt(new Double3(kT));
+    }
+    public Material setKr(Double3 kR) {
+        this.kR = kR;
+        return this;
+    }
+    public Material setKr(double kR) {
+        return setKr(new Double3(kR));
     }
 }

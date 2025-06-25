@@ -82,17 +82,5 @@ public class Sphere extends RadialGeometry{
         // If no valid intersection, return null
         return null;  // No valid intersections
     }
-    @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
-        // Calculate intersections with the sphere and filter by maxDistance
-        List<Intersection> intersections = calculateIntersectionsHelper(ray);
-        if (intersections == null || intersections.isEmpty()) {
-            return List.of();  // No intersections found
-        }
 
-        // Filter intersections based on the maximum distance
-        return intersections.stream()
-                .filter(intersection -> ray.getHead().distance(intersection.point) <= maxDistance)
-                .toList();
-    }
 }
