@@ -17,6 +17,7 @@ public class Camera implements Cloneable {
      * and resolution (number of horizontal and vertical pixels).
      */
     private Point p0 = new Point(0, 0, 0);         // Camera position
+    int antiAliasingRaysNum = 0; // Number of rays for anti-aliasing
     /**
      * The forward direction vector (vTo) is the direction the camera is looking at.
      * The up direction vector (vUp) is the direction that is considered "up" for the camera.
@@ -45,7 +46,6 @@ public class Camera implements Cloneable {
     private double height = 0.0;                   // View plane height
 
     private double distance = 0.0;// Distance to view plane
-
     private ImageWriter imageWriter = null; // Image writer for rendering
     private RayTracerBase rayTracer = null; // Ray tracer for rendering
     private int nX = 1; // Number of horizontal pixels
@@ -58,7 +58,22 @@ public class Camera implements Cloneable {
         return new Builder();
     }
     public void castRay(int x, int y){
-        imageWriter.writePixel(x, y, rayTracer.traceRay(constructRay(nX, nY, x, y)));
+        if(antiAliasingRaysNum<2) {
+            // If anti-aliasing is not enabled, trace a single ray for the pixel
+            imageWriter.writePixel(x, y, rayTracer.traceRay(constructRay(nX, nY, x, y)));
+            return;
+        }
+        else {
+            Point p = p0.add(vTo.scale(distance)); // Start point of the ray
+            double yI = -(x - (nY - 1) / 2d) * height / nY;
+            double xJ = (y - (nX - 1) / 2d) * width / nX;
+
+            //check if xJ or yI are not zero, so we will not add zero vector
+            if (!Util.isZero(xJ)) p = p.add(vRight.scale(xJ));
+            if (!Util.isZero(yI)) p = p.add(vUp.scale(yI));
+
+            imageWriter.writePixel(x, y, rayTracer.traceBeam(new Blackboard(height/(double)nY,width/(double)nX,p,vUp,vRight,antiAliasingRaysNum).getRays(p0)));
+        }
     }
 
     /**
@@ -140,6 +155,15 @@ public class Camera implements Cloneable {
     public static class Builder {
         private final Camera camera = new Camera();
 
+        /**
+         * Sets anti-aliasing ray's number.
+         * @param antiAliasingNum the number of rays for anti-aliasing
+         * @return this for concatenation
+         */
+        public Builder setAntiAliasing(int antiAliasingNum) {
+            camera.antiAliasingRaysNum = antiAliasingNum;
+            return this;
+        }
         /**
          * Sets the camera position.
          *

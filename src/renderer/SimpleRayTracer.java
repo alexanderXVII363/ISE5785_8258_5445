@@ -113,6 +113,22 @@ public class SimpleRayTracer extends RayTracerBase {
         return calcColor(closestIntersection, ray);
     }
 
+    public Color traceBeam(List<Ray> rays) {
+        Color result = Color.BLACK;
+        for(Ray r : rays) {
+            Intersection closestIntersection = findClosestIntersection(r);
+            if (closestIntersection != null) {
+                // Calculate the color at the intersection point
+                result = result.add(calcColor(closestIntersection, r));
+            }
+            else{
+                // If no intersection, add the background color
+                result = result.add(scene.background);
+            }
+        }
+        // Calculate the color at the intersection point
+        return result.reduce(rays.size());
+    }
     /**
      * Prepares intersection data for lighting calculations.
      * @param intersection the intersection to process

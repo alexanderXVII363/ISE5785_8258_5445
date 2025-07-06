@@ -87,6 +87,16 @@ public class Vector extends Point {
     }
 
     /**
+     * returns a vector that is orthogonal to this vector.
+     * @return A vector that is orthogonal to this vector.
+     */
+    public Vector getOrthogonal(){
+        if(xyz.d2()!=0 ||xyz.d3()!=0){
+            return new Vector(0, xyz.d3(), -xyz.d2());
+        }
+        return AXIS_Y;
+    }
+    /**
      * Computes the dot product of this vector and another vector.
      *
      * @param another_vector The other vector.
