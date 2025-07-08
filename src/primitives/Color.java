@@ -16,6 +16,8 @@ public class Color {
     /** Black color = (0,0,0) */
     public static final Color BLACK = new Color();
 
+    private static final int DELTA =5;
+
     /** Default constructor - to generate Black Color (privately) */
     private Color() { rgb = Double3.ZERO; }
 
@@ -109,6 +111,16 @@ public class Color {
         if (k < 1) throw new IllegalArgumentException("Can't scale a color by a by a number lower than 1");
         return new Color(rgb.reduce(k));
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Color)) return false;
+        Color other = (Color) o;
+        return Math.abs(other.rgb.d1() - this.rgb.d1()) <= DELTA
+                && other.rgb.d2() == this.rgb.d2()
+                && other.rgb.d3() == this.rgb.d3();
+    }
+
 
     @Override
     public String toString() { return "rgb:" + rgb; }

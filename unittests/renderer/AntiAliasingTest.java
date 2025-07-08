@@ -19,9 +19,11 @@ public class AntiAliasingTest {
                 .setRayTracer(scene,RayTracerType.SIMPLE)
                 .setLocation(new Point(0,0,30))
                 .setVpDistance(1000).setVpSize(150,150)
-                .setResolution(300,300)
-                .setDirection(new Point(0,0,0), Vector.AXIS_Y)
-                .setAntiAliasing(10);
-        builder.build().renderImage().writeToImage("antiAliasingTest.png");
+                .setResolution(2000,2000)
+                .setAdaptiveSuperSampling(4)
+                .setAntiAliasing(81)
+                .setDirection(new Point(0,0,0), Vector.AXIS_Y);
+
+        builder.build().renderImage().writeToImage("antiAliasingTestASS");
     }
 }

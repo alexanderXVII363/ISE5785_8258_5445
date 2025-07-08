@@ -17,7 +17,8 @@ public class Camera implements Cloneable {
      * and resolution (number of horizontal and vertical pixels).
      */
     private Point p0 = new Point(0, 0, 0);         // Camera position
-    int antiAliasingRaysNum = 0; // Number of rays for anti-aliasing
+    int antiAliasingRaysNum = 0;
+    int adaptive_super_sampling=0;// Number of rays for anti-aliasing
     /**
      * The forward direction vector (vTo) is the direction the camera is looking at.
      * The up direction vector (vUp) is the direction that is considered "up" for the camera.
@@ -57,8 +58,88 @@ public class Camera implements Cloneable {
     public static Builder getBuilder() {
         return new Builder();
     }
+    /**
+     * Performs adaptive super sampling for a specific pixel area.
+     * Sends rays through the four corners of the given pixel region.
+     * If all four corner colors are equal, returns that color.
+     * Otherwise, recursively subdivides the region and averages the resulting colors.
+     * Limits recursion depth to avoid infinite subdivision.
+     *
+     * @param i      pixel row index (0-based from top)
+     * @param j      pixel column index (0-based from left)
+     * @param depth  current recursion depth
+     * @param minX   minimum X coordinate within the pixel
+     * @param maxX   maximum X coordinate within the pixel
+     * @param minY   minimum Y coordinate within the pixel
+     * @param maxY   maximum Y coordinate within the pixel
+     * @return the averaged color of the region
+     */
+    private Color adaptiveSuperSampling(int i, int j, int depth,
+                                        double minX, double maxX, double minY, double maxY) {
+
+        // Send ray to top-left corner
+        Ray rayTL = constructRay(nX, nY, i, j, minX, minY);
+        Color cTL = rayTracer.traceRay(rayTL);
+        // Base case: maximum recursion depth reached – return top-left corner color
+        if (depth >= adaptive_super_sampling) {
+            return cTL;
+        }
+
+
+        // Check top-right only if needed
+        Ray rayTR = constructRay(nX, nY, i, j, maxX, minY);
+        Color cTR = rayTracer.traceRay(rayTR);
+        if (!cTR.equals(cTL)) {
+            return recurseAll(i, j, depth, minX, maxX, minY, maxY);
+        }
+
+        // Check bottom-left only if still equal
+        Ray rayBL = constructRay(nX, nY, i, j, minX, maxY);
+        Color cBL = rayTracer.traceRay(rayBL);
+        if (!cBL.equals(cTL)) {
+            return recurseAll(i, j, depth, minX, maxX, minY, maxY);
+        }
+
+        // Check bottom-right only if still equal
+        Ray rayBR = constructRay(nX, nY, i, j, maxX, maxY);
+        Color cBR = rayTracer.traceRay(rayBR);
+        if (!cBR.equals(cTL)) {
+            return recurseAll(i, j, depth, minX, maxX, minY, maxY);
+        }
+
+        // All corners are equal
+        return cTL;
+    }
+
+    /**
+     * Recursively subdivides the current pixel region into 4 quadrants and averages their colors.
+     *
+     * @param i      pixel row index
+     * @param j      pixel column index
+     * @param depth  current recursion depth
+     * @param minX   minimum X coordinate of the region
+     * @param maxX   maximum X coordinate of the region
+     * @param minY   minimum Y coordinate of the region
+     * @param maxY   maximum Y coordinate of the region
+     * @return averaged color from the 4 subregions
+     */
+    private Color recurseAll(int i, int j, int depth,
+                             double minX, double maxX, double minY, double maxY) {
+        double midX = (minX + maxX) / 2;
+        double midY = (minY + maxY) / 2;
+
+        Color r1 = adaptiveSuperSampling(i, j, depth + 1, minX, midX, minY, midY); // top-left
+        Color r2 = adaptiveSuperSampling(i, j, depth + 1, midX, maxX, minY, midY); // top-right
+        Color r3 = adaptiveSuperSampling(i, j, depth + 1, minX, midX, midY, maxY); // bottom-left
+        Color r4 = adaptiveSuperSampling(i, j, depth + 1, midX, maxX, midY, maxY); // bottom-right
+
+        return r1.add(r2, r3, r4).reduce(4);
+    }
     public void castRay(int x, int y){
-        if(antiAliasingRaysNum<2) {
+        if(adaptive_super_sampling!=0){
+            imageWriter.writePixel(x, y, adaptiveSuperSampling(x, y, 0, -0.5, 0.5, -0.5, 0.5));
+        }
+        else if(antiAliasingRaysNum<2) {
             // If anti-aliasing is not enabled, trace a single ray for the pixel
             imageWriter.writePixel(x, y, rayTracer.traceRay(constructRay(nX, nY, x, y)));
             return;
@@ -76,15 +157,6 @@ public class Camera implements Cloneable {
         }
     }
 
-    /**
-     * Constructs a ray from the camera through the pixel (j, i) on the view plane.
-     *
-     * @param nX number of horizontal pixels
-     * @param nY number of vertical pixels
-     * @param j  column index of the pixel (0-based)
-     * @param i  row index of the pixel (0-based)
-     * @return Ray from camera through the pixel
-     */
     public Ray constructRay(int nX, int nY, int j, int i) {
         Point pIJ = p0;
         double yI = -(i - (nY - 1) / 2d) * height / nY;
@@ -99,6 +171,32 @@ public class Camera implements Cloneable {
 
         return new Ray(p0, pIJ.subtract(p0).normalize());
     }
+
+    /**
+     * Constructs a ray from the camera through a specific pixel on the view plane.
+     *
+     * @param nX number of columns (horizontal resolution)
+     * @param nY number of rows (vertical resolution)
+     * @param j  pixel column index (0-based from left)
+     * @param i  pixel row index (0-based from top)
+     * @param xOff offset in the X direction for anti-aliasing and adaptive super sampling
+     * @param yOff offset in the Y direction for anti-aliasing and adaptive super sampling
+     * @return a {@link Ray} from the camera through the specified pixel
+     */
+    public Ray constructRay(int nX, int nY, int j, int i, double xOff, double yOff){
+        Point pij = p0.add(vTo.scale(distance));
+        double rY = height / nY;
+        double rX = width / nX;
+        double xJ = (j + xOff - (nX - 1) / 2.0) * rX;
+        double yI = -(i + yOff - (nY - 1) / 2.0) * rY;
+        xJ = xJ + Util.random(-0.5, 0.5) * rX;
+        yI = yI + Util.random(-0.5, 0.5) * rY;
+        if (!Util.isZero(xJ))
+            pij = pij.add(vRight.scale(xJ));
+        if (!Util.isZero(yI))
+            pij = pij.add(vUp.scale(yI));
+        return new Ray(p0, pij.subtract(p0));
+}
     @Override
     public Camera clone() {
         try {
@@ -282,6 +380,13 @@ public class Camera implements Cloneable {
             }
             camera.nX = nX;
             camera.nY = nY;
+            return this;
+        }
+        public Builder setAdaptiveSuperSampling(int adaptive_super_sampling){
+            if (adaptive_super_sampling < 0) {
+                throw new IllegalArgumentException("Adaptive super sampling must be non-negative");
+            }
+            camera.adaptive_super_sampling = adaptive_super_sampling;
             return this;
         }
         /**
