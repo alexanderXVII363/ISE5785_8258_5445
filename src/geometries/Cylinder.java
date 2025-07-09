@@ -28,6 +28,11 @@ public class Cylinder extends Tube{
     }
 
     @Override
+    /**
+     * Returns the height of the cylinder.
+     *
+     * @return The height of the cylinder.
+     */
     public Vector getNormal(Point point) {
         Point p0 = axis.getHead();
         Vector v = axis.getDirection();

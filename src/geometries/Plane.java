@@ -47,16 +47,28 @@ public class Plane extends Geometry {
         this.normal = normal.normalize();
     }
 
+    /**
+     * Gets the reference point of the plane
+     * @return The point on the plane
+     */
     @Override
     public Vector getNormal(Point point) {
         return normal;
     }
 
 
+    /**
+     * Gets the reference point of the plane
+     * @return The point on the plane
+     */
     public Vector getNormal() {
         return normal;
     }
-
+    /**
+     * Calculates the intersections of a ray with the plane
+     * @param ray The ray to check for intersections
+     * @return A list of intersections, or null if there are no intersections
+     */
     public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         Point head = ray.getHead();
         if (q0.equals(head))  // ray starts exactly on the plane's reference point

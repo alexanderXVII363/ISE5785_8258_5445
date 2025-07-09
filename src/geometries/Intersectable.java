@@ -19,9 +19,19 @@ public  abstract class Intersectable {
         var list = calculateIntersections(ray);
         return list==null||list.isEmpty() ? null : list.stream().map(intersection -> intersection.point).toList();
     }
+    /**
+     * Find intersections of a ray with the geometry object
+     *
+     * @param ray the ray to which we find intersections with
+     * @return a list of Intersection objects containing geometry and point
+     */
     protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray);
 
     //we will add a public static class called Intersection with geometry and point
+    /**
+     * Intersection class represents the intersection of a ray with a geometry object.
+     * It contains the geometry, the intersection point, and the material of the geometry.
+     */
     public static class Intersection {
 
         public final Geometry geometry;
@@ -42,6 +52,12 @@ public  abstract class Intersectable {
         public double nl;
 
 
+        /**
+         * Constructor for the Intersection class.
+         *
+         * @param geometry the geometry object that was intersected
+         * @param point    the point of intersection
+         */
         public Intersection(Geometry geometry, Point point) {
             this.geometry = geometry;
             this.point = point;
@@ -71,6 +87,13 @@ public  abstract class Intersectable {
 
     }
 
+    /**
+     * Calculate intersections of a ray with the geometry object.
+     * This method is public to allow access from outside the class.
+     *
+     * @param ray the ray to which we find intersections with
+     * @return a list of Intersection objects containing geometry and point
+     */
     public final List<Intersection> calculateIntersections(Ray ray) {
         return calculateIntersectionsHelper(ray);
     }

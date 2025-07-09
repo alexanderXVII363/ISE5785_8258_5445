@@ -16,11 +16,30 @@ public class Blackboard {
     Point center;
     //Vector normal;
 
+    /**
+     * Constructor for creating a blackboard with a specified height, width, center point, and normal vector.
+     *
+     * @param height    The height of the blackboard.
+     * @param width     The width of the blackboard.
+     * @param center    The center point of the blackboard.
+     * @param normal    The normal vector to the blackboard.
+     * @param numRays   The number of rays to be generated.
+     */
     public Blackboard(double height, double width, Point center, Vector normal,int numRays) {
         this(height, width, center, normal.getOrthogonal().crossProduct(normal).normalize(), normal.getOrthogonal().normalize(), numRays);
     }
 
 
+    /**
+     * Constructor for creating a blackboard with a specified height, width, center point, and orthogonal vectors.
+     *
+     * @param height    The height of the blackboard.
+     * @param width     The width of the blackboard.
+     * @param center    The center point of the blackboard.
+     * @param y         The vector in the Y direction (orthogonal to the X direction).
+     * @param x         The vector in the X direction (orthogonal to the Y direction).
+     * @param numRays   The number of rays to be generated.
+     */
     public Blackboard(double height, double width, Point center, Vector y,Vector x,int numRays) {
         this.height = height;
         this.width = width;
@@ -29,6 +48,12 @@ public class Blackboard {
         this.y = y.normalize();
         this.sqrtNumRays = (int) Math.sqrt(numRays);
     }
+    /**
+     * Generates a list of rays originating from a specified head point, directed towards points on the blackboard.
+     *
+     * @param head The point from which the rays originate.
+     * @return A list of rays directed towards points on the blackboard.
+     */
     public List<Ray> getRays(Point head){
         Point base = center;
         Point p;

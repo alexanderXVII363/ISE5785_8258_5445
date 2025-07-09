@@ -79,9 +79,18 @@ public class Polygon extends Geometry {
       }
    }
 
+   /**
+    * Gets the vertices of the polygon
+    * @return list of vertices
+    */
    @Override
    public Vector getNormal(Point point) { return plane.getNormal(); }
 
+   /**
+    * Calculates intersections of the polygon with a ray
+    * @param ray the ray to calculate intersections with
+    * @return list of intersections, or null if there are no intersections
+    */
    public List<Intersection> calculateIntersectionsHelper(Ray ray) {
       List<Intersection> planeIntersections = plane.calculateIntersections(ray);
       if (planeIntersections == null) {

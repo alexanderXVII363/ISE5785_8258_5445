@@ -28,6 +28,11 @@ public class Tube extends RadialGeometry {
         this.axis = _axis;
     }
 
+    /**
+     * Returns the axis of the tube.
+     * @param point A point on the tube.
+     * @return The axis of the tube as a Ray.
+     */
     @Override
     public Vector getNormal(Point point) {
         Point p0 = axis.getHead();

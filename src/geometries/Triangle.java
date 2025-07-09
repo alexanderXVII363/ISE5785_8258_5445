@@ -14,10 +14,24 @@ public class Triangle extends Polygon {
         super(point1, point2, point3);
     }
 
+    /**
+     * Constructor that initializes a triangle with a list of vertices.
+     * The vertices must be in counter-clockwise order.
+     *
+     * @param point The first vertex of the triangle.
+     */
     @Override
     public Vector getNormal(Point point) {
         return plane.getNormal(point);
     }
+    /**
+     * Calculates the intersections of a ray with the triangle.
+     * The method first finds the intersection of the ray with the plane of the triangle,
+     * then checks if that intersection point lies within the triangle using the inside-out test.
+     *
+     * @param ray The ray to check for intersections with the triangle.
+     * @return A list of intersections, or null if there are no intersections.
+     */
     @Override
     public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // Step 1: Find intersection with the plane of the triangle

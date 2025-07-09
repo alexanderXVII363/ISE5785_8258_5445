@@ -323,10 +323,25 @@ public class Camera implements Cloneable {
         return this;
     }
 
+    /**
+     * Writes the image to a file with the default name.
+     *
+     * @return this camera object
+     */
     public static class Builder {
         private final Camera camera = new Camera();
 
 
+        /**
+         * Sets the number of threads for rendering.
+         * If threads is -2, it uses the number of available processors minus 2 as the thread count.
+         * If threads is -1, it uses parallel streaming.
+         * If threads is 0, it uses single-threaded rendering.
+         *
+         * @param threads the number of threads to use
+         * @return this builder
+         * @throws IllegalArgumentException if threads is less than -2
+         */
         public Builder setMultithreading(int threads){
             if (threads<=-3){
                 throw new IllegalArgumentException("Multithreading parameter must be -2 or higher");
@@ -339,6 +354,14 @@ public class Camera implements Cloneable {
             }
             return this;
         }
+        /**
+         * Sets the debug print interval for the camera.
+         * If the interval is negative, it throws an IllegalArgumentException.
+         *
+         * @param printInterval the interval in seconds for printing debug information
+         * @return this builder
+         * @throws IllegalArgumentException if printInterval is negative
+         */
         public Builder setDebugPrint(double printInterval) {
             if (printInterval < 0) {
                 throw new IllegalArgumentException("interval parameter must be non-negative");
@@ -475,6 +498,15 @@ public class Camera implements Cloneable {
             camera.distance = distance;
             return this;
         }
+        /**
+         * Sets the resolution of the camera.
+         * This sets the number of horizontal and vertical pixels.
+         *
+         * @param nX number of horizontal pixels
+         * @param nY number of vertical pixels
+         * @return this builder
+         * @throws IllegalArgumentException if nX or nY is not positive
+         */
         public Builder setResolution(int nX, int nY){
             if (nX <= 0 || nY <= 0) {
                 throw new IllegalArgumentException("Resolution must be positive");
@@ -483,6 +515,14 @@ public class Camera implements Cloneable {
             camera.nY = nY;
             return this;
         }
+        /**
+         * Sets the adaptive super sampling level.
+         * This is the maximum depth of recursion for adaptive super sampling.
+         *
+         * @param adaptive_super_sampling the maximum depth of recursion for adaptive super sampling
+         * @return this builder
+         * @throws IllegalArgumentException if adaptive_super_sampling is negative
+         */
         public Builder setAdaptiveSuperSampling(int adaptive_super_sampling){
             if (adaptive_super_sampling < 0) {
                 throw new IllegalArgumentException("Adaptive super sampling must be non-negative");
