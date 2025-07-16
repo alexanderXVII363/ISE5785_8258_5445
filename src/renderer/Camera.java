@@ -194,10 +194,14 @@ public class Camera implements Cloneable {
      * Render image using multi-threading by parallel streaming
      * @return the camera object itself
      */
+    //made modification from original code by using IntStream to parallelize the ray casting
     private Camera renderImageStream() {
-        IntStream.range(0, nY).parallel()
-                .forEach(i -> IntStream.range(0, nX).parallel()
-                        .forEach(j -> castRay(j, i)));
+        IntStream.range(0, nY * nX).parallel()
+                .forEach(index -> {
+                    int i = index / nX;
+                    int j = index % nX;
+                    castRay(j, i);
+                });
         return this;
     }
 
